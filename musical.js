@@ -681,11 +681,24 @@ Instrument.prototype.play = function(abcstring) {
       delay = 0;
       for (ni = 0; ni < stems.length; ++ni) {
         stem = stems[ni];
+        
+        // the error proof feature tolerants errors from machine generated musics
+        if(stem.time == undefined){
+          // if stem.time is undefined, it will cause the delay to be NaN
+          // and the whole thing just screws up :p
+          stem.time = 0;
+        }
         // Attenuate chords to reduce clipping.
         attenuate = 1 / Math.sqrt(stem.notes.length);
         // Schedule every note inside a stem.
         for (j = 0; j < stem.notes.length; ++j) {
           note = stem.notes[j];
+          
+          // the error proof feature tolerants errors from machine generated musics
+          if(note.time == undefined){
+            // skip the "wrong" notes
+            continue;
+          }
           if (note.holdover) {
             // Skip holdover notes from ties.
             continue;
